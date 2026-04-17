@@ -108,6 +108,7 @@ function Item(props: ItemProps) {
         // backgroundColor: "rgba(0, 0, 0, 0.5)",
         backgroundColor: color,
         // borderColor: 'primary.border',
+        width,
       }}
       color='primary'
     >
