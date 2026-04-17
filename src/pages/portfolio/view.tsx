@@ -30,11 +30,11 @@ export default function Portfolio({
         let newScroll = scroll + delta;
         if (newScroll < minScroll) {
           newScroll = maxScroll;
-          newCard = --newCard < 0 ? newCard + portfolio.length : newCard;
+          newCard = trueMod(newCard - 1, portfolio.length);
         }
         if (newScroll > maxScroll) {
           newScroll = minScroll;
-          newCard = ++newCard % portfolio.length;
+          newCard = trueMod(newCard + 1, portfolio.length);
         }
         return {
           scroll: newScroll,
@@ -108,7 +108,7 @@ function Item(props: ItemProps) {
         // backgroundColor: "rgba(0, 0, 0, 0.5)",
         backgroundColor: color,
         // borderColor: 'primary.border',
-        width,
+        // width,
       }}
       color='primary'
     >

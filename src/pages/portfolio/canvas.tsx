@@ -71,22 +71,14 @@ export default function App() {
 }
 
 function Sun() {
-  const mesh = useRef();
-  const light = useRef();
-  // useFrame(({ clock }) => {
-  //   const time = Math.sin(clock.elapsedTime / 10) * 1000;
-  //   mesh.current.position.y = -300 + time;
-  //   light.current.position.y = -300 + time;
-  // });
   return (
     <>
       <directionalLight
-        ref={light as any}
         position={[0, 300, -3500]}
         args={['#f6c7d9', 100]}
         castShadow={false}
       />
-      <mesh ref={mesh} position={[0, -300, -3000]} scale={[1.2, 1, 1]}>
+      <mesh position={[0, -300, -3000]} scale={[1.2, 1, 1]}>
         <circleGeometry args={[1200, 64]} />
         <meshBasicMaterial color='#cc5869' fog={false} />
       </mesh>
@@ -105,37 +97,31 @@ function Sky() {
   );
 }
 
+type GridMaterialRef = THREE.ShaderMaterial & {
+  time: number;
+  pointer: THREE.Vector2;
+};
+
 function Terrain() {
   const { viewport, size } = useThree();
-  const material = useRef();
+  const material = useRef<GridMaterialRef>(null);
 
   const [scroll, setScroll] = useState(0);
 
-  const updateScroll = useCallback(
-    (event) => {
-      // if (window.pageYOffset) {
-      //   const delta = Math.sign(window.pageYOffset) * 10.0
-      //   const val = Math.max(0, window.pageYOffset + delta)
-      //   setState({ scrollTop: val })
-      // } else {
-      //   console.log('zero', window.pageYOffset)
-      // }
-      setScroll((oldScroll) => oldScroll + event.deltaY);
-    },
-    [setScroll]
-  );
+  const updateScroll = useCallback((event: WheelEvent) => {
+    setScroll((oldScroll) => oldScroll + event.deltaY);
+  }, []);
 
   useEffect(() => {
-    window.addEventListener('mousewheel', updateScroll);
-    return () => window.removeEventListener('scroll', updateScroll);
+    window.addEventListener('wheel', updateScroll);
+    return () => window.removeEventListener('wheel', updateScroll);
   }, [updateScroll]);
 
   useFrame((state, delta) => {
-    // material.current.time += delta * 1;
-    const current = material?.current as any;
+    const current = material.current;
     if (!current) return;
     current.time = scroll / 5000;
-    easing.damp3(material.current.pointer, state.pointer, 0.2, delta);
+    easing.damp3(current.pointer, state.pointer, 0.2, delta);
   });
 
   return (
@@ -149,14 +135,5 @@ function Terrain() {
         />
       </mesh>
     </group>
-  );
-}
-
-function BikeTrail() {
-  return (
-    <mesh position={[0, 0, 1000]} rotation={[Math.PI / 2, Math.PI / 2, 0]}>
-      <boxGeometry args={[30, 2000, 1]} />
-      <meshBasicMaterial color='#89672d' />
-    </mesh>
   );
 }
