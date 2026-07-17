@@ -111,7 +111,7 @@
     "about": "For an android development class, I created a video chatting application. It uses WebRTC to handle the actual media streaming and a Node server to handle the messaging and state synchronization. Since the scope of the project was meant to be fairly small, and since WebRTC streaming over the internet (through a NAT in particular) requires more advanced mechanisms (STUN, TURN servers), the application only works within a local network. Unfortunately, because of this constraint there is no easily accessible demo. One has to manually setup the Node server and sideload the APK on multiple android devices to test it out.",
     "image": ["face2face.gif"],
     "tags": ["JS", "Node", "Kotlin", "WebRTC"],
-    "links": [["repo", "https://github.com/euthyphro666/face2face"]]
+    "links": [["repo", "https://github.com/sentient-soup/face2face"]]
   },
   {
     "year": 2020,
@@ -122,7 +122,7 @@
     "image": ["aphelion-login.jpg", "aphelion.jpg"],
     "tags": ["TS", "Vue", "MongoDb", "Node"],
     "links": [
-      ["repo", "https://github.com/euthyphro666/aphelion"],
+      ["repo", "https://github.com/sentient-soup/aphelion"],
       ["demo", "http://aphelion.live/"]
     ]
   },
@@ -135,7 +135,7 @@
     "image": ["axiomatize.jpg", "Axiomatize1.png"],
     "tags": ["TS", "Quasar", "Vue"],
     "links": [
-      ["repo", "https://github.com/euthyphro666/axiomatize"],
+      ["repo", "https://github.com/sentient-soup/axiomatize"],
       ["demo", "http://axiomatize.appspot.com/"]
     ]
   },
@@ -147,7 +147,7 @@
     "about": "For my final project in university, I made a simple web based map editor for table top role playing games. The web app allowed the user to create a campaign to store maps and characters within. It also allowed the user to launch a map into a session that allowed other clients to join and synchronize map data.",
     "image": ["Spectrum.jpg", "Spectrum.gif"],
     "tags": ["TS", "Vue", "MongoDb", "Node"],
-    "links": [["repo", "https://github.com/euthyphro666/spectrum"]]
+    "links": [["repo", "https://github.com/sentient-soup/spectrum"]]
   },
   {
     "year": 2020,
@@ -158,8 +158,8 @@
     "image": ["disregardthat.jpg"],
     "tags": ["Vue"],
     "links": [
-      ["repo", "https://github.com/euthyphro666/disregard-that"],
-      ["site", "https://disregardthatpodcast.com"]
+      ["repo", "https://github.com/sentient-soup/disregard-that"],
+      ["site", "https://aphelion.live/projects/disregard-that-podcast/"]
     ]
   },
   {
@@ -171,7 +171,7 @@
     "image": ["Essentia.png"],
     "tags": ["TS", "React", "Three.js"],
     "links": [
-      ["repo", "https://github.com/euthyphro666/essentia"],
+      ["repo", "https://github.com/sentient-soup/essentia"],
       ["site", "https://joshhess.info"]
     ]
   },
@@ -187,6 +187,135 @@
       ["repo", "https://github.com/Something-Specific/7DRL-1"],
       ["site", "https://somethingspecific.itch.io/slaughterhouse"],
       ["demo", "https://7drl.somethingspecific.dev/"]
+    ]
+  },
+    {
+    "year": 2024,
+    "month": 5,
+    "title": "Fiberwave",
+    "subtitle": "Personal Project",
+    "about": "An early iteration of some of the graphics demoed on this page. I love playing with shaders and this was a fun little project to sharpen some of my skills.",
+    "image": ["fiberwave.png"],
+    "tags": ["Three.js", "React"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/code-cast"]
+    ]
+  },
+    {
+    "year": 2024,
+    "month": 12,
+    "title": "Code Cast",
+    "subtitle": "Personal Project",
+    "about": "An experimental project to create a webhook based code deployment system.",
+    "image": ["codecast.png"],
+    "tags": ["Fastify", "TS"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/code-cast"]
+    ]
+  },
+  {
+    "year": 2025,
+    "month": 1,
+    "title": "Perihelion",
+    "subtitle": "Personal Project",
+    "about": "My architecture as code repo for the majority of my homelab/perihelion servers. This repo contains my ArgoCD manifests, Helm charts, docker compose and other configuration files for my homelab.",
+    "image": ["argocd.png"],
+    "tags": ["K3s (Kubernetes)", "Docker", "Helm"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/perihelion"]
+    ]
+  },
+
+    {
+    "year": 2025,
+    "month": 8,
+    "title": "Apseline",
+    "subtitle": "Personal Project",
+    "about": "My single pane of glass/dashboard application for my perihelion (homelab) and aphelion (cloud) servers and services. ",
+    "image": ["apseline.png"],
+    "tags": ["React", "Express"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/apseline"],
+      ["site", "https://perihelion.live"]
+    ]
+  },
+
+  {
+    "year": 2026,
+    "month": 3,
+    "title": "Perihelion Status",
+    "subtitle": "Personal Project",
+    "about": "Homelab service uptime monitoring, classic status site.",
+    "image": ["status.png"],
+    "tags": ["Deno", "Hono"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/perihelion-status"],
+      ["site", "https://status.aphelion.live"]
+    ]
+  },
+
+  {
+    "year": 2025,
+    "month": 5,
+    "title": "Netrunner Tunnel",
+    "subtitle": "Personal Project",
+    "about": "A wireframe tunnel graphics simulation.",
+    "image": ["netrunner.png"],
+    "tags": ["p5", "React"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/netrunner"],
+      ["site", "https://aphelion.live/projects/netrunner/"]
+    ]
+  },
+  {
+    "year": 2026,
+    "month": 2,
+    "title": "Reelname",
+    "subtitle": "Personal Project",
+    "about": "Media file renaming and transfer tool. Scans folders of video files, identifies them against The Movie Database, generates properly formatted filenames for Jellyfin or Plex, and transfers them to local or remote destinations via SFTP. ",
+    "image": ["reelname.png"],
+    "tags": ["Next", "React", "Electron"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/reelname"],
+      ["site", "https://sentient-soup.github.io/reelname/"]
+    ]
+  },
+  {
+    "year": 2026,
+    "month": 5,
+    "title": "Cadence",
+    "subtitle": "Personal Project",
+    "about": "Basic physical and mental health tracking app.",
+    "image": ["cadence.png"],
+    "tags": ["React", "Express", "Docker"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/cadence"],
+      ["site", "https://cadence.perihelion.live"]
+    ]
+  },
+  {
+    "year": 2026,
+    "month": 5,
+    "title": "Sink",
+    "subtitle": "Personal Project",
+    "about": "Sink is a lightweight ingest utility for your media server. When your usual automation pipeline can't get the file there for you Sink fills the gap; drop files in via the web UI, let it sort out the metadata, and move on.",
+    "image": ["sink.png"],
+    "tags": ["React", "Express", "Docker"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/sink"],
+      ["site", "https://sink.perihelion.live"]
+    ]
+  },
+  {
+    "year": 2026,
+    "month": 6,
+    "title": "Vanifold",
+    "subtitle": "Personal Project",
+    "about": "One hub to unify a van/RV's sprawling subsystem controls. Instead of 20 knobs, switches, and vendor apps, one box: a Rust daemon on any small Linux machine, distributed ESP32 nodes near each subsystem, and a dashboard that actually sells the idea.",
+    "image": ["vanifold.png"],
+    "tags": ["Rust", "Svelte"],
+    "links": [
+      ["repo", "https://github.com/sentient-soup/vanifold"]
     ]
   }
 ]

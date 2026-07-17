@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { Suspense, useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { TerrainMaterial } from './terrain/Material';
+import { ScreenQuad } from '@react-three/drei';
+import { TerrainMaterial, SkyMaterial } from './terrain/Material';
 import { easing } from 'maath';
 import { scrollState } from './scroll';
 
@@ -47,75 +48,71 @@ export default function App() {
     return c;
   }, []);
   return (
-    <Canvas dpr={[1, 2]} camera={camera}>
+    // ponytail: dpr capped at 1.5, MSAA framebuffers at dpr 2 cost ~2x the memory
+    <Canvas dpr={[1, 1.5]} camera={camera}>
       <Suspense fallback={null}>
-        <Terrain />
         <Sky />
-        <Sun />
+        <Terrain />
       </Suspense>
     </Canvas>
   );
 }
 
-function Sun() {
-  return (
-    <>
-      <directionalLight
-        position={[0, 300, -3500]}
-        args={['#f6c7d9', 100]}
-        castShadow={false}
-      />
-      <mesh position={[0, -300, -3000]} scale={[1.2, 1, 1]}>
-        <circleGeometry args={[1200, 64]} />
-        <meshBasicMaterial color='#cc5869' fog={false} />
-      </mesh>
-    </>
-  );
-}
+type SkyMaterialRef = THREE.ShaderMaterial & {
+  time: number;
+  scroll: number;
+  pointer: THREE.Vector2;
+};
 
 function Sky() {
+  const { viewport, size } = useThree();
+  const material = useRef<SkyMaterialRef>(null);
+
+  useFrame((state, delta) => {
+    const current = material.current;
+    if (!current) return;
+    current.time = state.clock.elapsedTime;
+    current.scroll = scrollState.current / 5000;
+    easing.damp2(current.pointer, state.pointer, 0.25, delta);
+  });
+
   return (
-    <>
-      <ambientLight intensity={1} />
-      <color attach='background' args={['#000000']} />
-      <fog attach='fog' args={['#ffffff', 500, 4000]} />
-    </>
+    <ScreenQuad renderOrder={-1}>
+      <skyMaterial
+        ref={material}
+        key={SkyMaterial.key}
+        resolution={
+          new THREE.Vector2(
+            size.width * viewport.dpr,
+            size.height * viewport.dpr
+          )
+        }
+        depthWrite={false}
+        depthTest={false}
+      />
+    </ScreenQuad>
   );
 }
 
 type TerrainMaterialRef = THREE.ShaderMaterial & {
   time: number;
-  pointer: THREE.Vector2;
 };
 
 function Terrain() {
-  const { viewport, size } = useThree();
   const material = useRef<TerrainMaterialRef>(null);
 
-  useFrame((state, delta) => {
+  useFrame(() => {
     const current = material.current;
     if (!current) return;
     // scrollState.current is damped by the card overlay's rAF loop, so the
     // terrain and cards always move together.
     current.time = scrollState.current / 5000;
-    easing.damp2(current.pointer, state.pointer, 0.2, delta);
   });
 
   return (
-    <group>
-      <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[3000, 3000, 512, 512]} />
-        <terrainMaterial
-          ref={material}
-          key={TerrainMaterial.key}
-          resolution={
-            new THREE.Vector2(
-              size.width * viewport.dpr,
-              size.height * viewport.dpr
-            )
-          }
-        />
-      </mesh>
-    </group>
+    <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <planeGeometry args={[3000, 3000, 512, 512]} />
+      <terrainMaterial ref={material} key={TerrainMaterial.key} />
+    </mesh>
   );
 }
