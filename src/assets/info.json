@@ -198,7 +198,8 @@
     "image": ["fiberwave.png"],
     "tags": ["Three.js", "React"],
     "links": [
-      ["repo", "https://github.com/sentient-soup/code-cast"]
+      ["repo", "https://github.com/sentient-soup/fiberwave"],
+      ["site", "https://aphelion.live/projects/fiberwave/"]
     ]
   },
     {
