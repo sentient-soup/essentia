@@ -1,21 +1,21 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "sourceMap": true,
     "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "strict": true,
+    "jsx": "react-jsx",
     "resolveJsonModule": true,
-    "removeComments": true,
-    "newLine": "lf",
-    "noUnusedLocals": true,
-    "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "lib": ["ESNext"]
+    "sourceMap": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src"]
 }
