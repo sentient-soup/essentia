@@ -169,7 +169,7 @@
     "subtitle": "Personal Project",
     "about": "This is my personal website, detailing my resume information and containing my portfolio. I just recently slapped a fresh look onto my portfolio. Congratulations, you're looking at it!",
     "image": ["Essentia.png"],
-    "tags": ["TS", "Vue"],
+    "tags": ["TS", "React", "Three.js"],
     "links": [
       ["repo", "https://github.com/euthyphro666/essentia"],
       ["site", "https://joshhess.info"]

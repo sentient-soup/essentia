@@ -1,137 +1,149 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Box, Card, Typography } from '@mui/joy';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { PortfolioCard } from '../../types';
 import portfolio from '../../assets/info.json';
+import { scrollState, updateScroll, attachScrollInput } from './scroll';
 import Canvas from './canvas';
 
 import styles from './portfolio.module.scss';
 
-export interface PortfolioProps {
-  minScale: number;
-  maxScale: number;
-  scrollFactor: number;
-  fadeThreshold: number;
-}
+// Pixels of scroll to travel past one card.
+const SEGMENT = 1600;
+const MIN_SCALE = 1;
+const MAX_SCALE = 3;
+// Progress at which the current card starts fading out.
+const FADE_START = 0.4;
 
-export default function Portfolio({
-  minScale = 1.0,
-  maxScale = 3.0,
-  scrollFactor = 800.0,
-  fadeThreshold = 0.5,
-}: PortfolioProps) {
-  const [state, setState] = useState({ currentCard: 0, scroll: 800, total: 0 });
-  const updateScroll = useCallback(
-    (event: WheelEventInit) => {
-      setState(({ currentCard, scroll, total }) => {
-        const minScroll = minScale * scrollFactor;
-        const maxScroll = maxScale * scrollFactor;
-        const delta = event.deltaY ? event.deltaY : 0;
-        let newCard = currentCard;
-        let newScroll = scroll + delta;
-        if (newScroll < minScroll) {
-          newScroll = maxScroll;
-          newCard = trueMod(newCard - 1, portfolio.length);
-        }
-        if (newScroll > maxScroll) {
-          newScroll = minScroll;
-          newCard = trueMod(newCard + 1, portfolio.length);
-        }
-        return {
-          scroll: newScroll,
-          currentCard: newCard,
-          total: total + delta,
-        };
-      });
-    },
-    [minScale, maxScale, scrollFactor]
-  );
+// Newest first; info.json stays in chronological order.
+const cards = (portfolio as PortfolioCard[]).slice().reverse();
+const trueMod = (n: number, m: number) => ((n % m) + m) % m;
+
+export default function Portfolio() {
+  const [index, setIndex] = useState(0);
+  const currentRef = useRef<HTMLDivElement>(null);
+  const nextRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.addEventListener('mousewheel', updateScroll);
-    return () => document.removeEventListener('mousewheel', updateScroll);
-  }, [updateScroll]);
+    const detach = attachScrollInput();
+    let raf = 0;
+    let last = performance.now();
+    let shownIndex = 0;
 
-  const nextCardIndex = trueMod(state.currentCard + 1, portfolio.length);
-  const card = portfolio[state.currentCard];
-  const nextCard = portfolio[nextCardIndex];
+    const frame = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.1);
+      last = now;
+      updateScroll(dt);
 
-  const currentScale = state.scroll / scrollFactor;
-  const progress = (currentScale - minScale) / (maxScale - minScale);
-  const fade = Math.max(0, (progress - fadeThreshold) / (1.0 - fadeThreshold));
+      const s = scrollState.current;
+      const idx = trueMod(Math.floor(s / SEGMENT), cards.length);
+      const p = trueMod(s, SEGMENT) / SEGMENT;
 
-  const t = state.total / 5000 / 20.0 + 0.1;
-  const d = [0.263, 0.416, 0.557];
-  const r = Math.cos(6.28318 * (t + d[0]));
-  const g = Math.cos(6.28318 * (t + d[1]));
-  const b = Math.cos(6.28318 * (t + d[2]));
-  // const color = `rgba(${r * 255}, ${b * 255}, 255, 0.6)`;
-  // const color = `rgba(${r}, ${b}, 1.0, 0.6)`;
+      if (idx !== shownIndex) {
+        shownIndex = idx;
+        setIndex(idx);
+      }
+      if (currentRef.current) {
+        const scale = MIN_SCALE + p * (MAX_SCALE - MIN_SCALE);
+        const fade =
+          p < FADE_START ? 1 : 1 - (p - FADE_START) / (1 - FADE_START);
+        currentRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        currentRef.current.style.opacity = `${fade}`;
+      }
+      if (nextRef.current) {
+        nextRef.current.style.transform = `translate(-50%, -50%) scale(${p * MIN_SCALE})`;
+        nextRef.current.style.opacity = `${Math.min(1, p * 2)}`;
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => {
+      cancelAnimationFrame(raf);
+      detach();
+    };
+  }, []);
+
+  const nextIndex = trueMod(index + 1, cards.length);
+
   return (
-    // <Container className={styles.container}>
-    <Box sx={{ padding: '0', margin: '0', width: '100%', height: '100%' }}>
+    <div className={styles.container}>
       <Canvas />
-      {fade > 0 ? (
-        <Item
-          index={nextCardIndex}
-          card={nextCard}
-          scale={progress * minScale}
-          fade={0}
-          color={[r, g, b]}
-          className={styles.card}
-        />
-      ) : null}
-      <Item
-        index={state.currentCard}
-        card={card}
-        scale={currentScale}
-        fade={fade}
-        color={[r, g, b]}
-        className={styles.card}
-      />
-    </Box>
+      <div ref={nextRef} className={styles.slot} style={{ zIndex: 1 }}>
+        <Item card={cards[nextIndex]} />
+      </div>
+      <div ref={currentRef} className={styles.slot} style={{ zIndex: 2 }}>
+        <Item card={cards[index]} />
+      </div>
+      <header className={styles.header}>
+        <span className={styles.name}>Josh Hess</span>
+        <nav>
+          <a href='https://github.com/euthyphro666' target='_blank'>
+            github
+          </a>
+          <a href='mailto:joshhess13@gmail.com'>contact</a>
+        </nav>
+      </header>
+      <footer className={styles.footer}>
+        <span>
+          {index + 1} / {cards.length}
+        </span>
+        <span className={styles.hint}>scroll</span>
+      </footer>
+    </div>
   );
 }
 
-function Item(props: ItemProps) {
-  const card = props.card ?? {};
-  const [r, g, b] = props.color ?? [0.5, 0.5, 0.5];
-  // const color = `rgba(${r * 255}, ${b * 255}, 255, 0.8)`;
-  const color = `rgba(${g}, ${g}, ${g}, 0.8)`;
-  const fg = `rgba(${255 - r * 255}, ${255 - b * 255}, 255, 1)`;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; // prettier-ignore
 
+// Accent color per project category, keyed off the subtitle.
+const ACCENTS: Record<string, string> = {
+  'Work Project': '#7fd6e8',
+  'Personal Project': '#cc5869',
+  'University Project': '#a78bfa',
+  'Code Jam': '#f5c76a',
+  'Game Jam': '#f5c76a',
+};
+const DEFAULT_ACCENT = '#cc5869';
+
+function Item({ card }: { card: PortfolioCard }) {
+  const media = card.image?.[0];
+  const accent = ACCENTS[card.subtitle] ?? DEFAULT_ACCENT;
   return (
-    <Card
-      className={props.className}
-      sx={{
-        transform: `scale(${props.scale})`,
-        opacity: 1.0 - props.fade,
-        // backgroundColor: "rgba(0, 0, 0, 0.5)",
-        backgroundColor: color,
-        // borderColor: 'primary.border',
-        // width,
-      }}
-      color='primary'
+    <article
+      className={styles.card}
+      style={{ '--accent': accent } as CSSProperties}
     >
-      <Typography level='h4' component='h1' sx={{ color: 'rgb(10, 8, 10)' }}>
-        {card.title}
-      </Typography>
-      <Typography level='h5' component='h1' sx={{ color: fg }}>
-        {card.subtitle}
-      </Typography>
-      {/* <Typography level='body-sm' sx={{ color: fg }}> */}
-      <Typography level='body-sm' sx={{ color: 'grey' }}>
-        {card.about}
-      </Typography>
-    </Card>
+      {media &&
+        (media.startsWith('http') ? (
+          <iframe
+            className={styles.media}
+            src={media}
+            title={card.title}
+            allowFullScreen
+          />
+        ) : (
+          <img className={styles.media} src={`/portfolio/${media}`} alt='' />
+        ))}
+      <div className={styles.body}>
+        <div className={styles.heading}>
+          <h2>{card.title}</h2>
+          <span className={styles.date}>
+            {MONTHS[card.month - 1]} {card.year}
+          </span>
+        </div>
+        <span className={styles.subtitle}>{card.subtitle}</span>
+        <p className={styles.about}>{card.about}</p>
+        <div className={styles.meta}>
+          {card.tags?.map((tag) => (
+            <span key={tag} className={styles.tag}>
+              {tag}
+            </span>
+          ))}
+          {card.links?.map(([label, url]) => (
+            <a key={url} href={url} target='_blank' className={styles.link}>
+              {label} ↗
+            </a>
+          ))}
+        </div>
+      </div>
+    </article>
   );
 }
-interface ItemProps {
-  index: number;
-  scale: number;
-  fade: number;
-  className?: string;
-  color?: number[];
-  card: PortfolioCard;
-}
-
-const trueMod = (n: number, m: number) => ((n % m) + m) % m;
