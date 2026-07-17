@@ -231,7 +231,7 @@
     "month": 7,
     "title": "Apseline",
     "subtitle": "Personal Project",
-    "about": "My single pane of glass/dashboard application for my perihelion (homelab) and aphelion (cloud) servers and services. ",
+    "about": "My single pane of glass/dashboard application for my perihelion (homelab) and aphelion (cloud) servers and services.",
     "image": ["apseline.png"],
     "tags": ["React", "Express"],
     "links": [
